@@ -13,10 +13,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='wiktor',
+    maintainer='Wiktor Bajor',
     maintainer_email='wiktorbajor1@gmail.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='Human detector package',
+    license='Apache License 2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
