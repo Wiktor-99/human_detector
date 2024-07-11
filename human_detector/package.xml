@@ -7,6 +7,7 @@
   <maintainer email="wiktorbajor1@gmail.com">wiktor</maintainer>
   <license>Apache License 2.0</license>
 
+  <depend>generate_parameter_library</depend>
   <export>
     <build_type>ament_python</build_type>
   </export>

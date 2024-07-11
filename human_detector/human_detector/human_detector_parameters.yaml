@@ -1,0 +1,36 @@
+human_detector_parameters:
+  rgb_image_topic: {
+    type: string,
+    default_value: "/camera/color/image_raw",
+    read_only: true,
+    description: "Topic with rgb image.",
+  }
+  depth_image_topic: {
+    type: string,
+    default_value: "/camera/depth/image_rect_raw",
+    read_only: true,
+    description: "Topic with depth image.",
+  }
+  camera_info_topic: {
+    type: string,
+    default_value: "/camera/camera_info",
+    read_only: true,
+    description: "Topic with camera name.",
+  }
+  camera_frame_id: {
+    type: string,
+    default_value: "camera_link",
+    read_only: true,
+    description: "Name of frame containing the camera.",
+  }
+  detected_human_transform_frequency: {
+    type: int,
+    default_value: 10,
+    read_only: true,
+    description: "Frequency of publishing transform to detected human.",
+  }
+  publish_image_with_detected_human_topic: {
+    type: string,
+    read_only: true,
+    description: "Name of topic for publishing image with detected human.",
+  }
