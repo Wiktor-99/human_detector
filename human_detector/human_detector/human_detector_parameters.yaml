@@ -1,22 +1,4 @@
 human_detector_parameters:
-  rgb_image_topic: {
-    type: string,
-    default_value: "/camera/color/image_raw",
-    read_only: true,
-    description: "Topic with rgb image.",
-  }
-  depth_image_topic: {
-    type: string,
-    default_value: "/camera/depth/image_rect_raw",
-    read_only: true,
-    description: "Topic with depth image.",
-  }
-  camera_info_topic: {
-    type: string,
-    default_value: "/camera/camera_info",
-    read_only: true,
-    description: "Topic with camera name.",
-  }
   camera_frame_id: {
     type: string,
     default_value: "camera_link",
