@@ -21,7 +21,7 @@ class HumanDetector(LifecycleNode):
         self.parameters = param_listener.get_params()
         self.log_parameters()
         self.depth_image: Image = None
-        self.image: Image = None
+        self.image = None
         self.detected_landmarks = None
         self.detected_human_position_world = {'x': 0.0, 'y': 0.0, 'z': 0.0}
         self.camera_info_is_stored: bool = False
@@ -33,17 +33,17 @@ class HumanDetector(LifecycleNode):
     def on_configure(self, previous_state: LifecycleState):
         self.get_logger().info("IN on_configure")
         self.image_subscription = self.create_subscription(
-            Image, "/camera/third_person_camera/color/image_raw", self.store_image, 10
+            Image, "/camera/color/image_raw", self.store_image, 10
         )
         self.depth_image_subscription = self.create_subscription(
-            Image, "/camera/third_person_camera/depth/image_rect_raw", self.store_depth_image, 10
+            Image, "/camera/depth/image_rect_raw", self.store_depth_image, 10
         )
         self.camera_info_subscription = self.create_subscription(
-            CameraInfo, "/camera/third_person_camera/depth/camera_info", self.store_camera_info, 10
+            CameraInfo, "/camera/depth/camera_info", self.store_camera_info, 10
         )
         if self.is_publishing_image_with_detected_human_needed():
             self.image_with_detected_human_pub = self.create_publisher(
-                Image, "/camera/third_person_camera/color/person_selected", 10
+                Image, "/camera/color/person_selected", 10
             )
         self.timer = self.create_timer(1/self.parameters.detected_human_transform_frequency, self.timer_callback)
         self.timer.cancel()
@@ -95,7 +95,7 @@ class HumanDetector(LifecycleNode):
                 {self.parameters.publish_image_with_detected_human_topic} topic.")
 
     def is_publishing_image_with_detected_human_needed(self):
-        return self.parameters.publish_image_with_detected_human_topic is not None
+        return self.parameters.publish_image_with_detected_human_topic != ""
 
     def store_image(self, image_msg: Image):
         self.image = cv2.cvtColor(self.cv_bridge.imgmsg_to_cv2(image_msg), cv2.COLOR_BGR2RGB)
@@ -145,7 +145,7 @@ class HumanDetector(LifecycleNode):
         return x, y
 
     def timer_callback(self):
-        if self.detected_human_position_world['z'] > 0:
+        if self.detected_human_position_world['x'] > 0.0:
             self.broadcast_timer_callback()
         self.publish_image_with_detected_human()
 
@@ -163,25 +163,24 @@ class HumanDetector(LifecycleNode):
         transform.transform.rotation.w = 1.0
         self.tf_broadcaster.sendTransform(transform)
 
-    def draw_person_pose(self, image, landmarks):
-        if landmarks is not None:
-            mp_drawing = mp.solutions.drawing_utils
-            mp_drawing.draw_landmarks(
-                image,
-                landmarks,
-                mp.solutions.pose.POSE_CONNECTIONS,
-                mp.solutions.drawing_styles.get_default_pose_landmarks_style()
-            )
+    def draw_person_pose(self, image):
+        mp_drawing = mp.solutions.drawing_utils
+        mp_drawing.draw_landmarks(
+            image,
+            self.detected_landmarks,
+            mp.solutions.pose.POSE_CONNECTIONS,
+            mp.solutions.drawing_styles.get_default_pose_landmarks_style()
+        )
+        return image
 
     def publish_image_with_detected_human(self):
         if not self.is_publishing_image_with_detected_human_needed():
             return
         if self.detected_landmarks is not None:
-            self.draw_person_pose(self.image, self.detected_landmarks)
-            modified_image_msg = self.cv_bridge.cv2_to_imgmsg(cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR))
+            modified_image_msg = self.cv_bridge.cv2_to_imgmsg(self.draw_person_pose(self.image.copy()))
             self.image_with_detected_human_pub.publish(modified_image_msg)
         elif self.image is not None:
-            image_msg = self.cv_bridge.cv2_to_imgmsg(cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR))
+            image_msg = self.cv_bridge.cv2_to_imgmsg(self.image)
             self.image_with_detected_human_pub.publish(image_msg)
 
 
