@@ -8,6 +8,7 @@ from rclpy.lifecycle import LifecycleNode
 from cv_bridge.core import CvBridge
 from typing import NamedTuple
 import mediapipe as mp
+import rclpy
 import cv2
 
 def mm_to_m(mm):
@@ -184,8 +185,12 @@ class HumanDetector(LifecycleNode):
             self.image_with_detected_human_pub.publish(image_msg)
 
 
-def main():
-    pass
+def main(args=None):
+    rclpy.init(args=args)
+    pose_detector = HumanDetector()
+    rclpy.spin(pose_detector)
+    rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
