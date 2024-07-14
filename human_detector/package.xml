@@ -8,6 +8,16 @@
   <license>Apache License 2.0</license>
 
   <depend>generate_parameter_library</depend>
+  <depend>rclpy</depend>
+  <depend>tf2_ros</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>image_geometry</depend>
+  <depend>tf_transformations</depend>
+  <depend>python3-mediapipe-pip</depend>
+  <depend>cv_bridge</depend>
+  <depend>python3-opencv</depend>
+
   <export>
     <build_type>ament_python</build_type>
   </export>
