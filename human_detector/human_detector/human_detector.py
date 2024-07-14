@@ -85,14 +85,14 @@ class HumanDetector(LifecycleNode):
         self.get_logger().info(f"Human detector uses: {self.parameters.camera_frame_id} as camera link.")
         self.get_logger().info(f"Human detector uses: {self.parameters.detected_human_frame_id} as frame with human.")
         self.get_logger().info(
-            f"Human detector publishes transform to detected human with \
-            {self.parameters.detected_human_transform_frequency} Hz."
+            "Human detector publishes transform to detected human with "
+            f"{self.parameters.detected_human_transform_frequency} Hz."
         )
 
         if self.is_publishing_image_with_detected_human_needed():
             self.get_logger().info(
-                f"Human detector publishes image with detected human on \
-                {self.parameters.publish_image_with_detected_human_topic} topic.")
+                "Human detector publishes image with detected human on "
+                f"{self.parameters.publish_image_with_detected_human_topic} topic.")
 
     def is_publishing_image_with_detected_human_needed(self):
         return self.parameters.publish_image_with_detected_human_topic != ""
