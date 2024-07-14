@@ -138,18 +138,18 @@ class HumanDetector(LifecycleNode):
         self.publish_image_with_detected_human()
 
     def broadcast_timer_callback(self):
-        t = TransformStamped()
-        t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = 'camera_link'
-        t.child_frame_id = self.parameters.detected_human_frame_id
-        t.transform.translation.x = self.detected_human_position_world['x']
-        t.transform.translation.y = self.detected_human_position_world['y']
-        t.transform.translation.z = self.detected_human_position_world['z']
-        t.transform.rotation.x = 0.0
-        t.transform.rotation.y = 0.0
-        t.transform.rotation.z = 0.0
-        t.transform.rotation.w = 1.0
-        self.tf_broadcaster.sendTransform(t)
+        transform = TransformStamped()
+        transform.header.stamp = self.get_clock().now().to_msg()
+        transform.header.frame_id = self.parameters.camera_frame_id
+        transform.child_frame_id = self.parameters.detected_human_frame_id
+        transform.transform.translation.x = self.detected_human_position_world['x']
+        transform.transform.translation.y = self.detected_human_position_world['y']
+        transform.transform.translation.z = self.detected_human_position_world['z']
+        transform.transform.rotation.x = 0.0
+        transform.transform.rotation.y = 0.0
+        transform.transform.rotation.z = 0.0
+        transform.transform.rotation.w = 1.0
+        self.tf_broadcaster.sendTransform(transform)
 
     def draw_person_pose(self, image, landmarks):
         if landmarks is not None:
