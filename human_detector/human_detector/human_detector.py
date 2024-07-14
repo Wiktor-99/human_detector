@@ -1,4 +1,5 @@
 from human_detector.human_detector_parameters import human_detector_parameters
+from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from rclpy.lifecycle import LifecycleNode
 
 class HumanDetector(LifecycleNode):
@@ -20,6 +21,32 @@ class HumanDetector(LifecycleNode):
             self.get_logger().info(
                 f"Human detector publishes image with detected human on \
                 {self.parameters.publish_image_with_detected_human_topic} topic.")
+
+    def on_configure(self, previous_state: LifecycleState):
+        self.get_logger().info("IN on_configure")
+
+        return TransitionCallbackReturn.SUCCESS
+
+    def on_activate(self, previous_state: LifecycleState):
+        self.get_logger().info("IN on_activate")
+        return super().on_activate(previous_state)
+
+    def on_deactivate(self, previous_state: LifecycleState):
+        self.get_logger().info("IN on_deactivate")
+        return super().on_deactivate(previous_state)
+
+    def on_cleanup(self, previous_state: LifecycleState):
+        self.get_logger().info("IN on_cleanup")
+        return TransitionCallbackReturn.SUCCESS
+
+    def on_shutdown(self, previous_state: LifecycleState):
+        self.get_logger().info("IN on_shutdown")
+        return TransitionCallbackReturn.SUCCESS
+
+    def on_error(self, previous_state: LifecycleState):
+        self.get_logger().info("IN on_error")
+        return TransitionCallbackReturn.SUCCESS
+
 
 
 
