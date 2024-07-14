@@ -4,7 +4,7 @@
   <name>human_detector</name>
   <version>0.1.0</version>
   <description>Human detector package</description>
-  <maintainer email="wiktorbajor1@gmail.com">wiktor</maintainer>
+  <maintainer email="wiktorbajor1@gmail.com">Wiktor Bajor</maintainer>
   <license>Apache License 2.0</license>
 
   <depend>generate_parameter_library</depend>
