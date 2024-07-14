@@ -22,7 +22,7 @@ class HumanDetector(LifecycleNode):
         self.depth_image: Image = None
         self.image: Image = None
         self.detected_landmarks = None
-        self.detected_human_position_world = []
+        self.detected_human_position_world = {'x': 0.0, 'y': 0.0, 'z': 0.0}
         self.camera_info_is_stored: bool = False
         self.cv_bridge = CvBridge()
         self.model = PinholeCameraModel()
@@ -87,9 +87,11 @@ class HumanDetector(LifecycleNode):
 
     def store_image(self, image_msg: Image):
         self.image = cv2.cvtColor(self.cv_bridge.imgmsg_to_cv2(image_msg), cv2.COLOR_BGR2RGB)
+        self.store_human_pose()
 
     def store_depth_image(self, depth_image_msg: Image):
         self.depth_image = self.cv_bridge.imgmsg_to_cv2(depth_image_msg, desired_encoding="16UC1")
+        self.store_human_pose()
 
     def store_camera_info(self, info: CameraInfo):
         self.model.fromCameraInfo(info)
@@ -113,7 +115,11 @@ class HumanDetector(LifecycleNode):
         ray = self.model.projectPixelTo3dRay((x_pos_of_detected_person, y_pos_of_detected_person))
         ray_3d = [ray_element / ray[2] for ray_element in ray]
         point_xyz = [ray_element * depth_of_given_pixel for ray_element in ray_3d]
-        self.detected_human_position_world = [mm_to_m(point_xyz[2]), -mm_to_m(point_xyz[0]), mm_to_m(point_xyz[1])]
+        self.detected_human_position_world = {
+            'x': mm_to_m(point_xyz[2]),
+            'y': -mm_to_m(point_xyz[0]),
+            'z': mm_to_m(point_xyz[1])
+        }
 
     def get_position_of_human_in_the_image(self, detected_landmarks: NamedTuple, width: int, height: int):
         x, y = 0, 0
@@ -127,7 +133,8 @@ class HumanDetector(LifecycleNode):
         return x, y
 
     def timer_callback(self):
-        self.broadcast_timer_callback()
+        if self.detected_human_position_world['z'] > 0:
+            self.broadcast_timer_callback()
         self.publish_image_with_detected_human()
 
     def broadcast_timer_callback(self):
@@ -135,9 +142,9 @@ class HumanDetector(LifecycleNode):
         t.header.stamp = self.get_clock().now().to_msg()
         t.header.frame_id = 'camera_link'
         t.child_frame_id = self.parameters.detected_human_frame_id
-        t.transform.translation.x = self.detected_human_pose_world[0]
-        t.transform.translation.y = self.detected_human_pose_world[1]
-        t.transform.translation.z = self.detected_human_pose_world[2]
+        t.transform.translation.x = self.detected_human_position_world['x']
+        t.transform.translation.y = self.detected_human_position_world['y']
+        t.transform.translation.z = self.detected_human_position_world['z']
         t.transform.rotation.x = 0.0
         t.transform.rotation.y = 0.0
         t.transform.rotation.z = 0.0
