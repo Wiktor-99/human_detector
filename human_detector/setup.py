@@ -1,6 +1,9 @@
 from setuptools import find_packages, setup
+from generate_parameter_library_py.setup_helper import generate_parameter_module
 
 package_name = 'human_detector'
+
+generate_parameter_module("human_detector_parameters", "human_detector/human_detector_parameters.yaml")
 
 setup(
     name=package_name,
