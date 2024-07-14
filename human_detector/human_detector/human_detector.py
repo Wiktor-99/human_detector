@@ -51,23 +51,34 @@ class HumanDetector(LifecycleNode):
 
     def on_activate(self, previous_state: LifecycleState):
         self.get_logger().info("IN on_activate")
+        self.timer.reset()
         return super().on_activate(previous_state)
 
     def on_deactivate(self, previous_state: LifecycleState):
         self.get_logger().info("IN on_deactivate")
+        self.timer.cancel()
         return super().on_deactivate(previous_state)
 
     def on_cleanup(self, previous_state: LifecycleState):
         self.get_logger().info("IN on_cleanup")
+        self.destroy_resources()
         return TransitionCallbackReturn.SUCCESS
 
     def on_shutdown(self, previous_state: LifecycleState):
         self.get_logger().info("IN on_shutdown")
+        self.destroy_resources()
         return TransitionCallbackReturn.SUCCESS
 
     def on_error(self, previous_state: LifecycleState):
         self.get_logger().info("IN on_error")
+        self.destroy_resources()
         return TransitionCallbackReturn.SUCCESS
+
+    def destroy_resources(self):
+        self.destroy_subscription(self.depth_image_subscription)
+        self.destroy_subscription(self.image_subscription)
+        self.destroy_subscription(self.camera_info_subscription)
+        self.destroy_timer(self.timer)
 
     def log_parameters(self):
         self.get_logger().info(f"Human detector uses: {self.parameters.camera_frame_id} as camera link.")
