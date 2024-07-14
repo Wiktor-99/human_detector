@@ -19,6 +19,7 @@ human_detector_parameters:
   }
   publish_image_with_detected_human_topic: {
     type: string,
+    default_value: "",
     read_only: true,
     description: "Name of topic for publishing image with detected human.",
   }
