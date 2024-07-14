@@ -5,6 +5,12 @@ human_detector_parameters:
     read_only: true,
     description: "Name of frame containing the camera.",
   }
+  detected_human_frame_id: {
+    type: string,
+    default_value: "detected_human",
+    read_only: true,
+    description: "Name of frame containing detected human.",
+  }
   detected_human_transform_frequency: {
     type: int,
     default_value: 10,
