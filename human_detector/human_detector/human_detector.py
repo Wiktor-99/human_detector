@@ -156,16 +156,20 @@ class HumanDetector(LifecycleNode):
         }
 
     def get_position_of_human_in_the_image(self):
-        height, width, _ = self.image.shape
         x, y = 0, 0
         if self.detected_landmarks:
             landmarks = mp.solutions.pose.PoseLandmark
             left_hip_landmark = self.detected_landmarks.landmark[landmarks.LEFT_HIP]
             right_hip_landmark = self.detected_landmarks.landmark[landmarks.RIGHT_HIP]
-            x = int(min((left_hip_landmark.x * width + right_hip_landmark.x * width) / 2, width - 1))
-            y = int(min((left_hip_landmark.y * height + right_hip_landmark.y * height) / 2, height - 1))
+            x, y = self.extract_hip_midpoint(left_hip_landmark, right_hip_landmark)
 
         return x, y
+
+    def extract_hip_midpoint(self, left_hip_landmark, right_hip_landmark):
+        height, width, _ = self.image.shape
+        x = int(min((left_hip_landmark.x * width + right_hip_landmark.x * width) / 2, width - 1))
+        y = int(min((left_hip_landmark.y * height + right_hip_landmark.y * height) / 2, height - 1))
+        return x,y
 
     def timer_callback(self):
         if self.detected_human_position_world['x'] > 0.0:
