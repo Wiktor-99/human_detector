@@ -28,8 +28,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ros-tooling/action-ros-lint@v0.1
-      with:
-        linter: flake8
-        distribution: rolling
-        package-name: "*"
     - run: ament_flake8 . --config python_linter.flake8
