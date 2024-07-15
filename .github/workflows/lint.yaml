@@ -1,35 +1,36 @@
+---
 name: Lint
 on:
-  pull_request:
-  push:
+    pull_request:
+    push:
 
 jobs:
-  ament_lint_general:
-    name: ament_${{ matrix.linter }}
-    runs-on: ubuntu-latest
-    container:
-      image: rostooling/setup-ros-docker:ubuntu-noble-ros-rolling-ros-base-latest
-    strategy:
-      fail-fast: false
-      matrix:
-          linter: [xmllint, pep257]
-    steps:
-    - uses: actions/checkout@v4
-    - uses: ros-tooling/action-ros-lint@v0.1
-      with:
-        linter: ${{ matrix.linter }}
-        distribution: rolling
-        package-name: "*"
-  ament_flake8:
-    name: ament_flake8
-    runs-on: ubuntu-latest
-    container:
-      image: rostooling/setup-ros-docker:ubuntu-noble-ros-rolling-ros-base-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: ros-tooling/action-ros-lint@v0.1
-      with:
-        linter: flake8
-        distribution: rolling
-        package-name: "*"
-        arguments: --config python_linter.flake8
+    ament_lint_general:
+        name: ament_${{ matrix.linter }}
+        runs-on: ubuntu-latest
+        container:
+            image: rostooling/setup-ros-docker:ubuntu-noble-ros-rolling-ros-base-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                linter: [xmllint, pep257]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ros-tooling/action-ros-lint@v0.1
+              with:
+                  linter: ${{ matrix.linter }}
+                  distribution: rolling
+                  package-name: '*'
+    ament_flake8:
+        name: ament_flake8
+        runs-on: ubuntu-latest
+        container:
+            image: rostooling/setup-ros-docker:ubuntu-noble-ros-rolling-ros-base-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ros-tooling/action-ros-lint@v0.1
+              with:
+                  linter: flake8
+                  distribution: rolling
+                  package-name: '*'
+                  arguments: --config python_linter.flake8

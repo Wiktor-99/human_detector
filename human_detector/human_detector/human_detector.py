@@ -10,8 +10,10 @@ import mediapipe as mp
 import rclpy
 import cv2
 
+
 def mm_to_m(mm):
     return mm / 1000
+
 
 class HumanDetector(LifecycleNode):
     def __init__(self):
@@ -22,7 +24,7 @@ class HumanDetector(LifecycleNode):
         self.depth_image: Image = None
         self.image = None
         self.detected_landmarks = None
-        self.detected_human_position_world = {'x': 0.0, 'y': 0.0, 'z': 0.0}
+        self.detected_human_position_world = {"x": 0.0, "y": 0.0, "z": 0.0}
         self.camera_info_is_stored: bool = False
         self.cv_bridge = CvBridge()
         self.model = PinholeCameraModel()
@@ -31,9 +33,7 @@ class HumanDetector(LifecycleNode):
 
     def on_configure(self, previous_state: LifecycleState):
         self.get_logger().info("IN on_configure")
-        self.image_subscription = self.create_subscription(
-            Image, "/camera/color/image_raw", self.store_image, 10
-        )
+        self.image_subscription = self.create_subscription(Image, "/camera/color/image_raw", self.store_image, 10)
         self.depth_image_subscription = self.create_subscription(
             Image, "/camera/depth/image_rect_raw", self.store_depth_image, 10
         )
@@ -41,10 +41,8 @@ class HumanDetector(LifecycleNode):
             CameraInfo, "/camera/depth/camera_info", self.store_camera_info, 10
         )
         if self.is_publishing_image_with_detected_human_needed():
-            self.image_with_detected_human_pub = self.create_publisher(
-                Image, "/camera/color/person_selected", 10
-            )
-        self.timer = self.create_timer(1/self.parameters.detected_human_transform_frequency, self.timer_callback)
+            self.image_with_detected_human_pub = self.create_publisher(Image, "/camera/color/person_selected", 10)
+        self.timer = self.create_timer(1 / self.parameters.detected_human_transform_frequency, self.timer_callback)
         self.timer.cancel()
 
         return TransitionCallbackReturn.SUCCESS
@@ -91,7 +89,8 @@ class HumanDetector(LifecycleNode):
         if self.is_publishing_image_with_detected_human_needed():
             self.get_logger().info(
                 "Human detector publishes image with detected human on "
-                f"{self.parameters.publish_image_with_detected_human_topic} topic.")
+                f"{self.parameters.publish_image_with_detected_human_topic} topic."
+            )
 
     def is_publishing_image_with_detected_human_needed(self):
         return self.parameters.publish_image_with_detected_human_topic != ""
@@ -135,8 +134,9 @@ class HumanDetector(LifecycleNode):
             return
 
         self.detected_landmarks = self.person_pose_estimator.process(self.image).pose_landmarks
-        x_pos_of_detected_person, y_pos_of_detected_person = \
-            self.get_position_of_human_in_the_image(self.detected_landmarks)
+        x_pos_of_detected_person, y_pos_of_detected_person = self.get_position_of_human_in_the_image(
+            self.detected_landmarks
+        )
 
         self.get_3d_human_position(x_pos_of_detected_person, y_pos_of_detected_person)
 
@@ -149,9 +149,9 @@ class HumanDetector(LifecycleNode):
         ray_3d = [ray_element / ray[2] for ray_element in ray]
         point_xyz = [ray_element * depth_of_given_pixel for ray_element in ray_3d]
         self.detected_human_position_world = {
-            'x': mm_to_m(point_xyz[2]),
-            'y': -mm_to_m(point_xyz[0]),
-            'z': mm_to_m(point_xyz[1])
+            "x": mm_to_m(point_xyz[2]),
+            "y": -mm_to_m(point_xyz[0]),
+            "z": mm_to_m(point_xyz[1]),
         }
 
     def get_position_of_human_in_the_image(self):
@@ -168,10 +168,10 @@ class HumanDetector(LifecycleNode):
         height, width, _ = self.image.shape
         x = int(min((left_hip_landmark.x * width + right_hip_landmark.x * width) / 2, width - 1))
         y = int(min((left_hip_landmark.y * height + right_hip_landmark.y * height) / 2, height - 1))
-        return x,y
+        return x, y
 
     def timer_callback(self):
-        if self.detected_human_position_world['x'] > 0.0:
+        if self.detected_human_position_world["x"] > 0.0:
             self.broadcast_timer_callback()
         self.publish_image_with_detected_human()
 
@@ -180,9 +180,9 @@ class HumanDetector(LifecycleNode):
         transform.header.stamp = self.get_clock().now().to_msg()
         transform.header.frame_id = self.parameters.camera_frame_id
         transform.child_frame_id = self.parameters.detected_human_frame_id
-        transform.transform.translation.x = self.detected_human_position_world['x']
-        transform.transform.translation.y = self.detected_human_position_world['y']
-        transform.transform.translation.z = self.detected_human_position_world['z']
+        transform.transform.translation.x = self.detected_human_position_world["x"]
+        transform.transform.translation.y = self.detected_human_position_world["y"]
+        transform.transform.translation.z = self.detected_human_position_world["z"]
         transform.transform.rotation.x = 0.0
         transform.transform.rotation.y = 0.0
         transform.transform.rotation.z = 0.0
@@ -195,7 +195,7 @@ class HumanDetector(LifecycleNode):
             image,
             self.detected_landmarks,
             mp.solutions.pose.POSE_CONNECTIONS,
-            mp.solutions.drawing_styles.get_default_pose_landmarks_style()
+            mp.solutions.drawing_styles.get_default_pose_landmarks_style(),
         )
         return image
 
@@ -218,5 +218,5 @@ def main(args=None):
     rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
