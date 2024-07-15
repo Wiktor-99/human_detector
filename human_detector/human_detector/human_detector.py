@@ -110,15 +110,28 @@ class HumanDetector(LifecycleNode):
         if not self.camera_info_is_stored:
             self.camera_info_is_stored = True
 
+    def are_rgb_image_same_size_as_depth_image(self):
+        rgb_image_height, rgb_image_width, _ = self.image.shape
+        depth_image_height, depth_image_width, _ = self.depth_image.shape
+
+        return rgb_image_height == depth_image_height and rgb_image_width == depth_image_width
+
     def store_human_pose(self):
         if not self.camera_info_is_stored or self.image is None or self.depth_image is None:
-            self.get_logger().error("No camera info or image or depth image are not stored")
+            self.get_logger().error(
+                "No camera info or image or depth image are not stored. Human will not be detected."
+            )
             return
 
-        hight, width, _ = self.image.shape
+        if not self.are_rgb_image_same_size_as_depth_image():
+            self.get_logger().error(
+                "Dimensions of rgb image and depth image are not equal. Human will not be detected."
+            )
+            return
+
         self.detected_landmarks = self.person_pose_estimator.process(self.image).pose_landmarks
         x_pos_of_detected_person, y_pos_of_detected_person = \
-            self.get_position_of_human_in_the_image(self.detected_landmarks, width, hight)
+            self.get_position_of_human_in_the_image(self.detected_landmarks)
 
         if x_pos_of_detected_person <= 0 or y_pos_of_detected_person <= 0:
             return
@@ -133,7 +146,8 @@ class HumanDetector(LifecycleNode):
             'z': mm_to_m(point_xyz[1])
         }
 
-    def get_position_of_human_in_the_image(self, detected_landmarks: NamedTuple, width: int, height: int):
+    def get_position_of_human_in_the_image(self, detected_landmarks: NamedTuple):
+        height, width, _ = self.image.shape
         x, y = 0, 0
         if detected_landmarks:
             landmarks = mp.solutions.pose.PoseLandmark
