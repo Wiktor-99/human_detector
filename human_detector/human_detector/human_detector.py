@@ -116,23 +116,32 @@ class HumanDetector(LifecycleNode):
 
         return rgb_image_height == depth_image_height and rgb_image_width == depth_image_width
 
-    def store_human_pose(self):
+    def should_detect_human(self):
         if not self.camera_info_is_stored or self.image is None or self.depth_image is None:
             self.get_logger().error(
                 "No camera info or image or depth image are not stored. Human will not be detected."
             )
-            return
+            return False
 
         if not self.are_rgb_image_same_size_as_depth_image():
             self.get_logger().error(
                 "Dimensions of rgb image and depth image are not equal. Human will not be detected."
             )
+            return False
+
+        return True
+
+    def store_human_pose(self):
+        if not self.should_detect_human():
             return
 
         self.detected_landmarks = self.person_pose_estimator.process(self.image).pose_landmarks
         x_pos_of_detected_person, y_pos_of_detected_person = \
             self.get_position_of_human_in_the_image(self.detected_landmarks)
 
+        self.get_3d_human_position(x_pos_of_detected_person, y_pos_of_detected_person)
+
+    def get_3d_human_position(self, x_pos_of_detected_person, y_pos_of_detected_person):
         if x_pos_of_detected_person <= 0 or y_pos_of_detected_person <= 0:
             return
 
@@ -146,13 +155,13 @@ class HumanDetector(LifecycleNode):
             'z': mm_to_m(point_xyz[1])
         }
 
-    def get_position_of_human_in_the_image(self, detected_landmarks: NamedTuple):
+    def get_position_of_human_in_the_image(self):
         height, width, _ = self.image.shape
         x, y = 0, 0
-        if detected_landmarks:
+        if self.detected_landmarks:
             landmarks = mp.solutions.pose.PoseLandmark
-            left_hip_landmark = detected_landmarks.landmark[landmarks.LEFT_HIP]
-            right_hip_landmark = detected_landmarks.landmark[landmarks.RIGHT_HIP]
+            left_hip_landmark = self.detected_landmarks.landmark[landmarks.LEFT_HIP]
+            right_hip_landmark = self.detected_landmarks.landmark[landmarks.RIGHT_HIP]
             x = int(min((left_hip_landmark.x * width + right_hip_landmark.x * width) / 2, width - 1))
             y = int(min((left_hip_landmark.y * height + right_hip_landmark.y * height) / 2, height - 1))
 
@@ -190,6 +199,7 @@ class HumanDetector(LifecycleNode):
     def publish_image_with_detected_human(self):
         if not self.is_publishing_image_with_detected_human_needed():
             return
+
         if self.detected_landmarks is not None:
             modified_image_msg = self.cv_bridge.cv2_to_imgmsg(self.draw_person_pose(self.image.copy()))
             self.image_with_detected_human_pub.publish(modified_image_msg)
