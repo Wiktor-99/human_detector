@@ -9,7 +9,7 @@ jobs:
         name: ament_${{ matrix.linter }}
         runs-on: ubuntu-latest
         container:
-            image: rostooling/setup-ros-docker:ubuntu-noble-ros-rolling-ros-base-latest
+            image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-ros-base-latest
         strategy:
             fail-fast: false
             matrix:
@@ -25,12 +25,12 @@ jobs:
         name: ament_flake8
         runs-on: ubuntu-latest
         container:
-            image: rostooling/setup-ros-docker:ubuntu-noble-ros-rolling-ros-base-latest
+            image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-ros-base-latest
         steps:
             - uses: actions/checkout@v4
             - uses: ros-tooling/action-ros-lint@v0.1
               with:
                   linter: flake8
-                  distribution: rolling
+                  distribution: humble
                   package-name: '*'
                   arguments: --config python_linter.flake8
