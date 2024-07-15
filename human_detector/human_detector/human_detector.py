@@ -6,7 +6,6 @@ from sensor_msgs.msg import Image, CameraInfo
 from image_geometry import PinholeCameraModel
 from rclpy.lifecycle import LifecycleNode
 from cv_bridge.core import CvBridge
-from typing import NamedTuple
 import mediapipe as mp
 import rclpy
 import cv2
