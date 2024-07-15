@@ -27,13 +27,13 @@ repos:
             files: ^.github|./\.yaml
 
     - repo: https://github.com/psf/black
-      rev: 23.10.0
+      rev: 24.4.2
       hooks:
         - id: black
           args: ["--line-length=120", "--preview"]
 
     - repo: https://github.com/PyCQA/flake8
-      rev: 6.1.0
+      rev: 7.1.0
       hooks:
         - id: flake8
           args: ["--max-line-length=120"]
