@@ -19,8 +19,8 @@ jobs:
             - uses: ros-tooling/action-ros-lint@v0.1
               with:
                   linter: ${{ matrix.linter }}
-                  distribution: rolling
-                  package-name: '*'
+                  distribution: humble
+                  package-name: human_detector
     ament_flake8:
         name: ament_flake8
         runs-on: ubuntu-latest
@@ -32,5 +32,5 @@ jobs:
               with:
                   linter: flake8
                   distribution: humble
-                  package-name: '*'
+                  package-name: human_detector
                   arguments: --config python_linter.flake8
