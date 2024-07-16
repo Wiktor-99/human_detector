@@ -41,7 +41,9 @@ class HumanDetector(LifecycleNode):
             CameraInfo, "/camera/depth/camera_info", self.store_camera_info, 10
         )
         if self.is_publishing_image_with_detected_human_needed():
-            self.image_with_detected_human_pub = self.create_publisher(Image, "/camera/color/person_selected", 10)
+            self.image_with_detected_human_pub = self.create_publisher(
+                Image, self.parameters.publish_image_with_detected_human_topic, 10
+            )
         self.timer = self.create_timer(1 / self.parameters.detected_human_transform_frequency, self.timer_callback)
         self.timer.cancel()
 
