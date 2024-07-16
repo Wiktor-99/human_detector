@@ -3,7 +3,7 @@ from cv_bridge.core import CvBridge
 from geometry_msgs.msg import TransformStamped
 from human_detector.human_detector_parameters import human_detector_parameters
 from image_geometry import PinholeCameraModel
-import mediaspipe as mp
+import mediapipe as mp
 import rclpy
 from rclpy.lifecycle import LifecycleNode
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
@@ -110,7 +110,7 @@ class HumanDetector(LifecycleNode):
 
     def are_rgb_image_same_size_as_depth_image(self):
         rgb_image_height, rgb_image_width, _ = self.image.shape
-        depth_image_height, depth_image_width, _ = self.depth_image.shape
+        depth_image_height, depth_image_width = self.depth_image.shape
 
         return rgb_image_height == depth_image_height and rgb_image_width == depth_image_width
 
@@ -154,7 +154,7 @@ class HumanDetector(LifecycleNode):
             "z": mm_to_m(point_xyz[1]),
         }
 
-    def get_position_of_human_in_the_image(self):
+    def get_position_of_human_in_the_image(self, landmarks):
         x, y = 0, 0
         if self.detected_landmarks:
             landmarks = mp.solutions.pose.PoseLandmark
