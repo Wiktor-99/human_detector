@@ -47,6 +47,9 @@ The node utilizes the following topics as inputs:
 - `/camera/depth/image_rect_raw` (Image) - for capturing the depth image
 - `/camera/depth/camera_info` (CameraInfo) - for capturing camera information
 
+### Constraints
+There is one strong limitation rgb image and depth image must be same size.
+
 ### Output
 The node publishes the following data:
 - Transform to detected human
