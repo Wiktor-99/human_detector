@@ -24,7 +24,7 @@ class HumanDetector(LifecycleNode):
         self.depth_image: Image = None
         self.image = None
         self.detected_landmarks = None
-        self.detected_human_position_world = {"x": 0.0, "y": 0.0, "z": 0.0}
+        self.detected_human_position_world = {"x": 0.0, "y": 0.0}
         self.camera_info_is_stored: bool = False
         self.cv_bridge = CvBridge()
         self.model = PinholeCameraModel()
@@ -150,11 +150,7 @@ class HumanDetector(LifecycleNode):
         ray = self.model.projectPixelTo3dRay((x_pos_of_detected_person, y_pos_of_detected_person))
         ray_3d = [ray_element / ray[2] for ray_element in ray]
         point_xyz = [ray_element * depth_of_given_pixel for ray_element in ray_3d]
-        self.detected_human_position_world = {
-            "x": mm_to_m(point_xyz[2]),
-            "y": -mm_to_m(point_xyz[0]),
-            "z": mm_to_m(point_xyz[1]),
-        }
+        self.detected_human_position_world = {"x": mm_to_m(point_xyz[2]), "y": -mm_to_m(point_xyz[0])}
 
     def get_position_of_human_in_the_image(self, landmarks):
         x, y = 0, 0
@@ -184,7 +180,7 @@ class HumanDetector(LifecycleNode):
         transform.child_frame_id = self.parameters.detected_human_frame_id
         transform.transform.translation.x = self.detected_human_position_world["x"]
         transform.transform.translation.y = self.detected_human_position_world["y"]
-        transform.transform.translation.z = self.detected_human_position_world["z"]
+        transform.transform.translation.z = 0.0
         transform.transform.rotation.x = 0.0
         transform.transform.rotation.y = 0.0
         transform.transform.rotation.z = 0.0
