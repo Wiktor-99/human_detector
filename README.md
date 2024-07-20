@@ -53,11 +53,12 @@ There is one strong limitation rgb image and depth image must be same size.
 ### Output
 The node publishes the following data:
 - Transform to detected human
-- `/camera/color/person_selected` (Image) - for publishing the image with the detected human
+- `image_with_detected_human` (Image) - for publishing the image with the detected human if publish_image_with_detected is set to true.
 
 ### Parameters
 The node uses the following parameters:
 - `camera_frame_id` - Name of the frame containing the camera. Default is set to **camera_link**.
 - `detected_human_frame_id` - Name of the frame containing the detected human. Default is set to **detected_human**.
 - `detected_human_transform_frequency` - Frequency of publishing the transform to the detected human. Default is set to **10Hz**.
-- `publish_image_with_detected_human_topic` - Name of the topic for publishing the image with the detected human. Default is set to an empty string. If the topic name is empty, then the image with the selected human will not be published.
+- `publish_image_with_detected` - If Topic with detected human should be published or not. If true image with detected person will be published on the
+`image_with_detected_human` topic.

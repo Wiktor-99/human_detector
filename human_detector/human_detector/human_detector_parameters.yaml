@@ -21,5 +21,5 @@ human_detector_parameters:
     type: bool,
     default_value: true,
     read_only: true,
-    description: "Topic with detected human should be published or not.",
+    description: "If Topic with detected human should be published or not.",
   }
