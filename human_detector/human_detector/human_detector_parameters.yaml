@@ -17,9 +17,9 @@ human_detector_parameters:
     read_only: true,
     description: "Frequency of publishing transform to detected human.",
   }
-  publish_image_with_detected_human_topic: {
-    type: string,
-    default_value: "",
+  publish_image_with_detected: {
+    type: bool,
+    default_value: true,
     read_only: true,
-    description: "Name of topic for publishing image with detected human.",
+    description: "Topic with detected human should be published or not.",
   }

@@ -40,10 +40,8 @@ class HumanDetector(LifecycleNode):
         self.camera_info_subscription = self.create_subscription(
             CameraInfo, "/camera/depth/camera_info", self.store_camera_info, 10
         )
-        if self.is_publishing_image_with_detected_human_needed():
-            self.image_with_detected_human_pub = self.create_publisher(
-                Image, self.parameters.publish_image_with_detected_human_topic, 10
-            )
+        if self.parameters.publish_image_with_detected:
+            self.image_with_detected_human_pub = self.create_publisher(Image, "image_with_detected_human", 10)
         self.timer = self.create_timer(1 / self.parameters.detected_human_transform_frequency, self.timer_callback)
         self.timer.cancel()
 
@@ -88,14 +86,8 @@ class HumanDetector(LifecycleNode):
             f"{self.parameters.detected_human_transform_frequency} Hz."
         )
 
-        if self.is_publishing_image_with_detected_human_needed():
-            self.get_logger().info(
-                "Human detector publishes image with detected human on "
-                f"{self.parameters.publish_image_with_detected_human_topic} topic."
-            )
-
-    def is_publishing_image_with_detected_human_needed(self):
-        return self.parameters.publish_image_with_detected_human_topic != ""
+        if self.parameters.publish_image_with_detected:
+            self.get_logger().info("Human detector will publish image with detected human.")
 
     def store_image(self, image_msg: Image):
         self.image = cv2.cvtColor(self.cv_bridge.imgmsg_to_cv2(image_msg), cv2.COLOR_BGR2RGB)
@@ -198,7 +190,7 @@ class HumanDetector(LifecycleNode):
         return image
 
     def publish_image_with_detected_human(self):
-        if not self.is_publishing_image_with_detected_human_needed():
+        if not self.parameters.publish_image_with_detected:
             return
 
         if self.detected_landmarks is not None:
