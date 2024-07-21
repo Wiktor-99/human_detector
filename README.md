@@ -62,3 +62,7 @@ The node uses the following parameters:
 - `detected_human_transform_frequency` - Frequency of publishing the transform to the detected human. Default is set to **10Hz**.
 - `publish_image_with_detected` - If Topic with detected human should be published or not. If true image with detected person will be published on the
 `image_with_detected_human` topic.
+- `min_detection_confidence` - Mediapipe parameter. Minimum confidence value ([0.0, 1.0]) from the person-detection model for
+    the detection to be considered successful. Default to 0.5
+- `min_tracking_confidence` - Mediapipe parameter. Minimum confidence value ([0.0, 1.0]) from the landmark-tracking model for
+    the pose landmarks to be considered tracked successfully, or otherwise person detection will be invoked automatically on the next input image.
