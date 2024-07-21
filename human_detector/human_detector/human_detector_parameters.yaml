@@ -1,25 +1,38 @@
 human_detector_parameters:
-  camera_frame_id: {
-    type: string,
-    default_value: "camera_link",
-    read_only: true,
-    description: "Name of frame containing the camera.",
-  }
-  detected_human_frame_id: {
-    type: string,
-    default_value: "detected_human",
-    read_only: true,
-    description: "Name of frame containing detected human.",
-  }
-  detected_human_transform_frequency: {
-    type: int,
-    default_value: 10,
-    read_only: true,
-    description: "Frequency of publishing transform to detected human.",
-  }
-  publish_image_with_detected: {
-    type: bool,
-    default_value: true,
-    read_only: true,
-    description: "If Topic with detected human should be published or not.",
-  }
+  camera_frame_id:
+    type: string
+    default_value: "camera_link"
+    read_only: true
+    description: "Name of frame containing the camera."
+  detected_human_frame_id:
+    type: string
+    default_value: "detected_human"
+    read_only: true
+    description: "Name of frame containing detected human."
+  detected_human_transform_frequency:
+    type: int
+    default_value: 10
+    read_only: true
+    description: "Frequency of publishing transform to detected human."
+  publish_image_with_detected:
+    type: bool
+    default_value: true
+    read_only: true
+    description: "If Topic with detected human should be published or not."
+  min_detection_confidence:
+    type: double
+    default_value: 0.5
+    read_only: true
+    description: "Mediapipe parameter. Minimum confidence value ([0.0, 1.0]) from the person-detection model for
+                  the detection to be considered successful. Default to 0.5"
+    validation:
+      bounds<>: [0.0, 1.0]
+  min_tracking_confidence:
+    type: double
+    default_value: 0.5
+    read_only: true
+    description: "Mediapipe parameter. Minimum confidence value ([0.0, 1.0]) from the landmark-tracking model for
+                  the pose landmarks to be considered tracked successfully, or otherwise person detection will be
+                  invoked automatically on the next input image."
+    validation:
+      bounds<>: [0.0, 1.0]

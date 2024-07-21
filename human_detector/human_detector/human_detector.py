@@ -29,7 +29,10 @@ class HumanDetector(LifecycleNode):
         self.cv_bridge = CvBridge()
         self.model = PinholeCameraModel()
         self.tf_broadcaster = TransformBroadcaster(self)
-        self.person_pose_estimator = mp.solutions.pose.Pose(min_detection_confidence=0.8, min_tracking_confidence=0.5)
+        self.person_pose_estimator = mp.solutions.pose.Pose(
+            min_detection_confidence=self.parameters.min_detection_confidence,
+            min_tracking_confidence=self.parameters.min_tracking_confidence,
+        )
 
     def on_configure(self, previous_state: LifecycleState):
         self.get_logger().info("IN on_configure")
@@ -85,7 +88,13 @@ class HumanDetector(LifecycleNode):
             "Human detector publishes transform to detected human with "
             f"{self.parameters.detected_human_transform_frequency} Hz."
         )
+        self.get_logger().info(
+            f"Mediapipe will use {self.parameters.min_detection_confidence} " "as min_detection_confidence"
+        )
 
+        self.get_logger().info(
+            f"Mediapipe will use {self.parameters.min_tracking_confidence} " "as min_tracking_confidence"
+        )
         if self.parameters.publish_image_with_detected:
             self.get_logger().info("Human detector will publish image with detected human.")
 
