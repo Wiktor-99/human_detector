@@ -6,10 +6,14 @@ The package has been tested with the RealSense **D435i** camera along with the c
 
 ## Results
 
-
+### Simulation
 ![detected human](/images/detected_human.png " ")
 
 Visible point cloud is added only for visualization purposes and it is not part of package.
+
+### Real world example
+![real world example](/images/real_world_example.png " ")
+
 
 ## Setup
 
