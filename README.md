@@ -70,3 +70,6 @@ The node uses the following parameters:
     the detection to be considered successful. Default to 0.5
 - `min_tracking_confidence` - Mediapipe parameter. Minimum confidence value ([0.0, 1.0]) from the landmark-tracking model for
     the pose landmarks to be considered tracked successfully, or otherwise person detection will be invoked automatically on the next input image.
+
+## Devcontainer
+For development and running package devcontainer can be used. All dependencies already installed via in the container.
