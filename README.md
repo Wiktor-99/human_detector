@@ -1,5 +1,6 @@
 # Human Detector for ROS 2
 ![humble](https://github.com/Wiktor-99/human_detector/actions/workflows/build_and_test_humble.yaml/badge.svg)
+![iron](https://github.com/Wiktor-99/human_detector/actions/workflows/build_and_test_iron.yaml/badge.svg)
 
 This ROS 2 package utilizes MediaPipe and depth images to detect the position of a human in the x, y, and z coordinates.
 
