@@ -1,0 +1,55 @@
+---
+name: Build and Test (jazzy)
+
+on:
+    push:
+        branches: [jazzy]
+
+    pull_request:
+        branches: [jazzy]
+
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        container:
+            image: ubuntu:noble
+
+        steps:
+            - uses: ros-tooling/setup-ros@v0.7
+              with:
+                  use-ros2-testing: true
+            - uses: ros-tooling/action-ros-ci@v0.3
+              with:
+                  target-ros2-distro: jazzy
+
+    ament_lint_general:
+        name: ament_${{ matrix.linter }}
+        runs-on: ubuntu-latest
+        container:
+            image: rostooling/setup-ros-docker:ubuntu-noble-ros-jazzy-ros-base-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                linter: [xmllint, pep257]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ros-tooling/action-ros-lint@v0.1
+              with:
+                  linter: ${{ matrix.linter }}
+                  distribution: jazzy
+                  package-name: human_detector
+    ament_flake8:
+        name: ament_flake8
+        runs-on: ubuntu-latest
+        container:
+            image: rostooling/setup-ros-docker:ubuntu-noble-ros-jazzy-ros-base-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ros-tooling/action-ros-lint@v0.1
+              with:
+                  linter: flake8
+                  distribution: jazzy
+                  package-name: human_detector
+                  arguments: --config python_linter.flake8
