@@ -1,11 +1,11 @@
-FROM osrf/ros:iron-desktop
-ARG ROS_DISTRO=iron
+FROM osrf/ros:jazzy-desktop
+ARG ROS_DISTRO=jazzy
 ARG USERNAME=ros
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN groupadd --gid $USER_GID $USERNAME \
+RUN deluser ubuntu && groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && apt-get update \
     && apt-get install -y sudo \
@@ -23,9 +23,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN sudo apt-get update --fix-missing \
     && apt-get -y install bash-completion ros-$ROS_DISTRO-rmw-cyclonedds-cpp ros-$ROS_DISTRO-generate-parameter-library \
     python3-pip pre-commit \
-    && pip3 uninstall numpy \
-    && pip3 install numpy==1.26.4 \
-    && pip3 install mediapipe \
+    && pip3 install numpy==1.26.4 --break-system-packages \
+    && pip3 install mediapipe --break-system-packages\
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
