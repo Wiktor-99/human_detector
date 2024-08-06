@@ -1,5 +1,5 @@
-FROM osrf/ros:jazzy-desktop
-ARG ROS_DISTRO=jazzy
+FROM osrf/ros:rolling-desktop
+ARG ROS_DISTRO=rolling
 ARG USERNAME=ros
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
