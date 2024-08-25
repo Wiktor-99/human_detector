@@ -16,29 +16,14 @@ jobs:
     ament_lint_general:
         name: ament_${{ matrix.linter }}
         runs-on: ubuntu-latest
-        container:
-            image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-ros-base-latest
         strategy:
             fail-fast: false
             matrix:
-                linter: [xmllint, pep257]
+                linter: [xmllint, flake8, pep257]
         steps:
-            - uses: actions/checkout@v4
-            - uses: ros-tooling/action-ros-lint@v0.1
-              with:
-                  linter: ${{ matrix.linter }}
-                  distribution: humble
-                  package-name: human_detector
-    ament_flake8:
-        name: ament_flake8
-        runs-on: ubuntu-latest
-        container:
-            image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-ros-base-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: ros-tooling/action-ros-lint@v0.1
-              with:
-                  linter: flake8
-                  distribution: humble
-                  package-name: human_detector
-                  arguments: --config python_linter.flake8
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Run linter
+              uses: ./.github/actions/lint/
+              env:
+                  LINTER: ${{ matrix.linter }}
