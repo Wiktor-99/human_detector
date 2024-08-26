@@ -1,0 +1,29 @@
+---
+name: ROS
+
+on:
+    pull_request:
+    push:
+        branches:
+            - foxy*
+            - humble*
+            - iron*
+            - rolling*
+            - main*
+    workflow_dispatch:
+
+jobs:
+    ament_lint_general:
+        name: ament_${{ matrix.linter }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                linter: [xmllint, flake8, pep257]
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Run linter
+              uses: ./.github/actions/lint/
+              env:
+                  LINTER: ${{ matrix.linter }}
