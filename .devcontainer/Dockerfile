@@ -1,5 +1,5 @@
-FROM osrf/ros:iron-desktop
-ARG ROS_DISTRO=iron
+FROM osrf/ros:humble-desktop
+ARG ROS_DISTRO=humble
 ARG USERNAME=ros
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID

@@ -27,7 +27,7 @@
       "NVIDIA_DRIVER_CAPABILITIES": "all",
       "NVIDIA_VISIBLE_DEVICES": "all",
       "QT_X11_NO_MITSHM": "1",
-      "RMW_IMPLEMENTATION": ""
+      "RMW_IMPLEMENTATION": "rmw_cyclonedds_cpp"
     },
     "customizations": {
       "vscode": {
