@@ -9,9 +9,8 @@ on:
         branches: [rolling]
 
     workflow_dispatch:
-
     schedule:
-        - cron: "0 0 * * 7"
+        - cron: '30 14 * * 7'
 
 jobs:
     build:
