@@ -25,7 +25,7 @@ repos:
       hooks:
           - id: yamlfmt
             files: ^.github|./\.yaml
-            args: [--preserve-quotes, 'True']
+            args: [--preserve-quotes]
 
     - repo: https://github.com/psf/black
       rev: 24.4.2
