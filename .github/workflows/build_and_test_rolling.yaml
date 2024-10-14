@@ -8,9 +8,8 @@ on:
     pull_request:
         branches: [rolling]
 
-    workflow_dispatch:
     schedule:
-        - cron: '15 14 * * 6'
+        - cron: "*/5 * * * *"
 
 jobs:
     build:
