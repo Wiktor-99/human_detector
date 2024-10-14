@@ -3,7 +3,7 @@ name: Build and Test (rolling)
 
 on:
     push:
-        branches: [rolling]
+        branches: [rolling, ci_test]
 
     pull_request:
         branches: [rolling]
