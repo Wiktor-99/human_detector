@@ -7,16 +7,16 @@
   <maintainer email="wiktorbajor1@gmail.com">Wiktor Bajor</maintainer>
   <license>Apache License 2.0</license>
 
-  <depend>generate_parameter_library</depend>
-  <depend>rclpy</depend>
-  <depend>tf2_ros</depend>
-  <depend>geometry_msgs</depend>
-  <depend>sensor_msgs</depend>
-  <depend>image_geometry</depend>
-  <depend>tf_transformations</depend>
-  <depend>python3-mediapipe-pip</depend>
-  <depend>cv_bridge</depend>
-  <depend>python3-opencv</depend>
+  <exec_depend>generate_parameter_library</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>image_geometry</exec_depend>
+  <exec_depend>tf_transformations</exec_depend>
+  <exec_depend>python3-mediapipe-pip</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>
