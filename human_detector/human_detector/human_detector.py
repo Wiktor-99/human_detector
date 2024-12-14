@@ -18,8 +18,7 @@ def mm_to_m(mm):
 class HumanDetector(LifecycleNode):
     def __init__(self):
         super().__init__("human_detector")
-        param_listener = human_detector_parameters.ParamListener(self)
-        self.parameters = param_listener.get_params()
+        self.param_listener = human_detector_parameters.ParamListener(self)
         self.log_parameters()
         self.depth_image: Image = None
         self.image = None
@@ -29,13 +28,15 @@ class HumanDetector(LifecycleNode):
         self.cv_bridge = CvBridge()
         self.model = PinholeCameraModel()
         self.tf_broadcaster = TransformBroadcaster(self)
+        self.person_pose_estimator = None
+
+    def on_configure(self, previous_state: LifecycleState):
+        self.get_logger().info("IN on_configure")
+        self.parameters = self.param_listener.get_params()
         self.person_pose_estimator = mp.solutions.pose.Pose(
             min_detection_confidence=self.parameters.min_detection_confidence,
             min_tracking_confidence=self.parameters.min_tracking_confidence,
         )
-
-    def on_configure(self, previous_state: LifecycleState):
-        self.get_logger().info("IN on_configure")
         self.image_subscription = self.create_subscription(Image, "/camera/color/image_raw", self.store_image, 10)
         self.depth_image_subscription = self.create_subscription(
             Image, "/camera/depth/image_rect_raw", self.store_depth_image, 10
