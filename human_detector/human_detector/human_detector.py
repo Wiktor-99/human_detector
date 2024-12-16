@@ -8,7 +8,10 @@ import rclpy
 from rclpy.lifecycle import LifecycleNode
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from sensor_msgs.msg import CameraInfo, Image
+from rclpy.qos_overriding_options import QoSOverridingOptions
+from rclpy.qos import qos_profile_sensor_data
 from tf2_ros.transform_broadcaster import TransformBroadcaster
+from message_filters import ApproximateTimeSynchronizer, Subscriber
 
 
 def mm_to_m(mm):
@@ -19,37 +22,65 @@ class HumanDetector(LifecycleNode):
     def __init__(self):
         super().__init__("human_detector")
         self.param_listener = human_detector_parameters.ParamListener(self)
-        self.log_parameters()
         self.depth_image: Image = None
         self.image = None
         self.detected_landmarks = None
         self.detected_human_position_world = {"x": 0.0, "y": 0.0}
-        self.camera_info_is_stored: bool = False
         self.cv_bridge = CvBridge()
         self.model = PinholeCameraModel()
         self.tf_broadcaster = TransformBroadcaster(self)
         self.person_pose_estimator = None
+        self.time_approximation_slope = 0.05
+        self.camera_info = None
 
     def on_configure(self, previous_state: LifecycleState):
         self.get_logger().info("IN on_configure")
         self.parameters = self.param_listener.get_params()
+        self.log_parameters()
         self.person_pose_estimator = mp.solutions.pose.Pose(
             min_detection_confidence=self.parameters.min_detection_confidence,
             min_tracking_confidence=self.parameters.min_tracking_confidence,
         )
-        self.image_subscription = self.create_subscription(Image, "/camera/color/image_raw", self.store_image, 10)
-        self.depth_image_subscription = self.create_subscription(
-            Image, "/camera/depth/image_rect_raw", self.store_depth_image, 10
-        )
-        self.camera_info_subscription = self.create_subscription(
-            CameraInfo, "/camera/depth/camera_info", self.store_camera_info, 10
-        )
+        self.initialize_sync_subscribers()
+
         if self.parameters.publish_image_with_detected:
             self.image_with_detected_human_pub = self.create_publisher(Image, "image_with_detected_human", 10)
         self.timer = self.create_timer(1 / self.parameters.detected_human_transform_frequency, self.timer_callback)
         self.timer.cancel()
 
         return TransitionCallbackReturn.SUCCESS
+
+    def initialize_sync_subscribers(self):
+        sync_topics = [
+            Subscriber(
+                self,
+                Image,
+                "/camera/color/image_raw",
+                qos_profile=qos_profile_sensor_data,
+                qos_overriding_options=QoSOverridingOptions.with_default_policies(),
+            ),
+            Subscriber(
+                self,
+                Image,
+                "/camera/depth/image_rect_raw",
+                qos_profile=qos_profile_sensor_data,
+                qos_overriding_options=QoSOverridingOptions.with_default_policies(),
+            ),
+            Subscriber(
+                self,
+                CameraInfo,
+                "/camera/depth/camera_info",
+                qos_profile=qos_profile_sensor_data,
+                qos_overriding_options=QoSOverridingOptions.with_default_policies(),
+            ),
+        ]
+
+        self.image_approx_time_sync = ApproximateTimeSynchronizer(
+            sync_topics,
+            queue_size=5,
+            slop=self.time_approximation_slope,
+        )
+        self.image_approx_time_sync.registerCallback(self.on_image_data)
 
     def on_activate(self, previous_state: LifecycleState):
         self.get_logger().info("IN on_activate")
@@ -77,9 +108,6 @@ class HumanDetector(LifecycleNode):
         return TransitionCallbackReturn.SUCCESS
 
     def destroy_resources(self):
-        self.destroy_subscription(self.depth_image_subscription)
-        self.destroy_subscription(self.image_subscription)
-        self.destroy_subscription(self.camera_info_subscription)
         self.destroy_timer(self.timer)
 
     def log_parameters(self):
@@ -99,18 +127,12 @@ class HumanDetector(LifecycleNode):
         if self.parameters.publish_image_with_detected:
             self.get_logger().info("Human detector will publish image with detected human.")
 
-    def store_image(self, image_msg: Image):
-        self.image = cv2.cvtColor(self.cv_bridge.imgmsg_to_cv2(image_msg), cv2.COLOR_BGR2RGB)
+    def on_image_data(self, image: Image, depth_image: Image, info: CameraInfo):
+        self.camera_info = info
+        self.model.fromCameraInfo(self.camera_info)
+        self.image = cv2.cvtColor(self.cv_bridge.imgmsg_to_cv2(image), cv2.COLOR_BGR2RGB)
+        self.depth_image = self.cv_bridge.imgmsg_to_cv2(depth_image, desired_encoding="16UC1")
         self.store_human_pose()
-
-    def store_depth_image(self, depth_image_msg: Image):
-        self.depth_image = self.cv_bridge.imgmsg_to_cv2(depth_image_msg, desired_encoding="16UC1")
-        self.store_human_pose()
-
-    def store_camera_info(self, info: CameraInfo):
-        self.model.fromCameraInfo(info)
-        if not self.camera_info_is_stored:
-            self.camera_info_is_stored = True
 
     def are_rgb_image_same_size_as_depth_image(self):
         rgb_image_height, rgb_image_width, _ = self.image.shape
@@ -119,7 +141,7 @@ class HumanDetector(LifecycleNode):
         return rgb_image_height == depth_image_height and rgb_image_width == depth_image_width
 
     def should_detect_human(self):
-        if not self.camera_info_is_stored or self.image is None or self.depth_image is None:
+        if self.camera_info is None or self.image is None or self.depth_image is None:
             self.get_logger().error(
                 "No camera info or image or depth image are not stored. Human will not be detected."
             )
