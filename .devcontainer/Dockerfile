@@ -24,6 +24,7 @@ RUN apt-get update && \
 ENV DEBIAN_FRONTEND=noninteractive
 RUN sudo apt-get update --fix-missing \
     && apt-get -y install bash-completion ros-$ROS_DISTRO-rmw-cyclonedds-cpp ros-$ROS_DISTRO-generate-parameter-library \
+    ros-$ROS_DISTRO-message-filters \
     python3-pip pre-commit \
     && pip3 install numpy==1.26.4 --break-system-packages \
     && pip3 install mediapipe --break-system-packages\
