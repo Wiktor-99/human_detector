@@ -5,6 +5,7 @@ from human_detector.human_detector_parameters import human_detector_parameters
 from image_geometry import PinholeCameraModel
 import mediapipe as mp
 import rclpy
+from rclpy.time import Time
 from rclpy.lifecycle import LifecycleNode
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from sensor_msgs.msg import CameraInfo, Image
@@ -130,6 +131,7 @@ class HumanDetector(LifecycleNode):
     def on_image_data(self, image: Image, depth_image: Image, info: CameraInfo):
         self.camera_info = info
         self.model.fromCameraInfo(self.camera_info)
+        self.image_time_stamp = Time.from_msg(image.header.stamp)
         self.image = cv2.cvtColor(self.cv_bridge.imgmsg_to_cv2(image), cv2.COLOR_BGR2RGB)
         self.depth_image = self.cv_bridge.imgmsg_to_cv2(depth_image, desired_encoding="16UC1")
         self.store_human_pose()
@@ -199,7 +201,7 @@ class HumanDetector(LifecycleNode):
 
     def broadcast_timer_callback(self):
         transform = TransformStamped()
-        transform.header.stamp = self.get_clock().now().to_msg()
+        transform.header.stamp = self.image_time_stamp.to_msg()
         transform.header.frame_id = self.parameters.camera_frame_id
         transform.child_frame_id = self.parameters.detected_human_frame_id
         transform.transform.translation.x = self.detected_human_position_world["x"]
