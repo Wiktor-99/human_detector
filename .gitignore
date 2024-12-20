@@ -3,3 +3,4 @@ install/
 log/
 __pycache__/
 .vscode/
+human_detector_parameters.py
