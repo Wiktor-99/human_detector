@@ -2,10 +2,8 @@
 name: Build and Test (rolling)
 
 on:
-    push:
-        branches: [rolling, ci_test]
-
     pull_request:
+    push:
         branches: [rolling]
 
     schedule:
