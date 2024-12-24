@@ -2,13 +2,9 @@
 name: Build and Test (jazzy)
 
 on:
+    pull_request:
     push:
         branches: [jazzy]
-
-    pull_request:
-        branches: [jazzy]
-
-    workflow_dispatch:
 
 jobs:
     build:
