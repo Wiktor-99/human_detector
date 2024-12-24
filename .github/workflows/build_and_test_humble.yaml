@@ -2,13 +2,9 @@
 name: Build and Test (humble)
 
 on:
+    pull_request:
     push:
         branches: [humble]
-
-    pull_request:
-        branches: [humble]
-
-    workflow_dispatch:
 
 jobs:
     build:
