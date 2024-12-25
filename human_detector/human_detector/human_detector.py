@@ -31,13 +31,13 @@ class HumanDetector(LifecycleNode):
         self.model = PinholeCameraModel()
         self.tf_broadcaster = TransformBroadcaster(self)
         self.person_pose_estimator = None
-        self.time_approximation_slope = 0.05
         self.camera_info = None
 
     def on_configure(self, previous_state: LifecycleState):
         self.get_logger().info("IN on_configure")
         self.parameters = self.param_listener.get_params()
         self.log_parameters()
+        self.time_approximation_slope = self.parameters.time_approximation_slope
         self.person_pose_estimator = mp.solutions.pose.Pose(
             min_detection_confidence=self.parameters.min_detection_confidence,
             min_tracking_confidence=self.parameters.min_tracking_confidence,
