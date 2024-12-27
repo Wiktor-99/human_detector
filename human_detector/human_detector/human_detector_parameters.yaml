@@ -36,3 +36,8 @@ human_detector_parameters:
                   invoked automatically on the next input image."
     validation:
       bounds<>: [0.0, 1.0]
+  time_approximation_slope:
+    type: double
+    default_value: 0.05
+    read_only: true
+    description: "Timer approximation slope for the msgs synchronization."
