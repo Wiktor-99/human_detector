@@ -14,10 +14,9 @@ jobs:
         runs-on: ubuntu-latest
         container:
             image: ubuntu:noble
-
+        env:
+            PIP_BREAK_SYSTEM_PACKAGES: 1
         steps:
-            - name: rosdep-pip-config
-              run: export PIP_BREAK_SYSTEM_PACKAGES=1
             - uses: ros-tooling/setup-ros@v0.7
               with:
                   use-ros2-testing: true
