@@ -5,13 +5,6 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
 ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-key del F42ED6FBAB17C654 && \
-    mkdir -p /etc/apt/keyrings && \
-    curl -fsSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | gpg --dearmor | sudo tee /etc/apt/keyrings/ros-archive-keyring.gpg > /dev/null && \
-    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu noble main" | sudo tee /etc/apt/sources.list.d/ros2.list && \
-   rm /etc/apt/sources.list.d/ros2-latest.list 2>/dev/null || true
-
 RUN userdel $(getent passwd 1000 | cut -d: -f1)
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
