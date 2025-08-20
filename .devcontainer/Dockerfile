@@ -25,7 +25,7 @@ RUN sudo apt-get update --fix-missing \
     ros-$ROS_DISTRO-message-filters \
     python3-pip pre-commit \
     && pip3 install numpy==1.26.4 --break-system-packages \
-    && pip3 install mediapipe --break-system-packages\
+    && pip3 install --ignore-installed mediapipe --break-system-packages\
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
