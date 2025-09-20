@@ -12,7 +12,7 @@
       "--security-opt=seccomp:unconfined",
       "--security-opt=apparmor:unconfined",
       "--ipc=host",
-      "--runtime=nvidia",
+      "--gpus=all",
       "--device=/dev/dri"
     ],
     "mounts": [
