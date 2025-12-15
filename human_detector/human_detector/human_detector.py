@@ -8,6 +8,7 @@ import rclpy
 from rclpy.time import Time
 from rclpy.lifecycle import LifecycleNode
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
+from image_transport_py import ImageTransport
 from sensor_msgs.msg import CameraInfo, Image
 from rclpy.qos_overriding_options import QoSOverridingOptions
 from rclpy.qos import qos_profile_sensor_data
@@ -45,7 +46,8 @@ class HumanDetector(LifecycleNode):
         self.initialize_sync_subscribers()
 
         if self.parameters.publish_image_with_detected:
-            self.image_with_detected_human_pub = self.create_publisher(Image, "image_with_detected_human", 10)
+            self.image_transport = ImageTransport("compressed_image_with_detected_human_pub", "compressed")
+            self.image_with_detected_human_pub = self.image_transport.advertise("image_with_detected_human", 10)
         self.timer = self.create_timer(1 / self.parameters.detected_human_transform_frequency, self.timer_callback)
         self.timer.cancel()
 
