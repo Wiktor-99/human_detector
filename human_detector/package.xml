@@ -18,6 +18,8 @@
   <exec_depend>cv_bridge</exec_depend>
   <exec_depend>python3-opencv</exec_depend>
   <exec_depend>message_filters</exec_depend>
+  <exec_depend>image_transport</exec_depend>
+  <exec_depend>image_transport_py</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>
