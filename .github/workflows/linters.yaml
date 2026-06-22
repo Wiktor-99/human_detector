@@ -22,7 +22,7 @@ jobs:
                 linter: [xmllint, flake8, pep257]
         steps:
             - name: Checkout code
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
             - name: Run linter
               uses: ./.github/actions/lint/
               env:
